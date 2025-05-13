@@ -16,9 +16,9 @@
 	EXPLODED  = 28
 	C	  = 32
 
-	EXPLOSION = 64			# ASCII code of EXPLOSION symbol '@'
-	SPACE = 32			# ASCII code of SPACE symbol ' '
-	CROSSHAIRS = 43			# ASCII code of CROSSHAIR symbol '+'
+	EXPLOSION = 64			    # ASCII code of EXPLOSION symbol '@'
+	SPACE = 32			        # ASCII code of SPACE symbol ' '
+	CROSSHAIRS = 43			    # ASCII code of CROSSHAIR symbol '+'
 	CROSSHAIRS_INIT_X = 40		# starting position X of CROSSHAIR
 	CROSSHAIRS_INIT_Y = 12		# starting position Y of CROSSHAIR
 
@@ -29,7 +29,7 @@
 
 	ROW_OFFSET = 160		# memory offset of 1 row
 	COLUMN_OFFSET = 2		# memory offset of 1 column
-	BASE_ROW_OFFSET = 3840		# memory offset of 24 rows
+	BASE_ROW_OFFSET = 3840	# memory offset of 24 rows
 	SHIFT_16_BITS = 16		# shift right/left offset = 16 bits
 
 	FIRST_BASE = 18			# 1st base X position
@@ -50,16 +50,16 @@
 .globl mp1_missile_list, base_alive, mp1_score
 
 mp1_missile_list:	.long 0x0	# Head of list pointer
-base_alive:		.long 0x0	# Array of 3 bytes, plus a padding byte
-mp1_score:		.long 0x0	# Player's current score
+base_alive:		.long 0x0	    # Array of 3 bytes, plus a padding byte
+mp1_score:		.long 0x0	    # Player's current score
 
 
 # Data private to this  file
 
 base_pic:     	    .string "/^^^\\"	# Picture of a live base
-dead_base_pic: 	    .string "xxxxx"	# Picture of a dead base
-crosshairs_x:		.long 0x0	# X-position of the crosshairs
-crosshairs_y:		.long 0x0	# Y-position of the crosshairs
+dead_base_pic: 	    .string "xxxxx"	    # Picture of a dead base
+crosshairs_x:		.long 0x0	        # X-position of the crosshairs
+crosshairs_y:		.long 0x0	        # Y-position of the crosshairs
 .text
 
 # void mp1_poke(void);
@@ -192,19 +192,19 @@ update_missiles:
     JE   Finish_Traverse_Missile_List
 
     #Erase_Missile
-    MOVB  $SPACE, %CL				# %CL <- ' ' to clear the missile
-    MOVL  X(%EBX), %ESI				# %ESI <- X position of the missile
+    MOVB  $SPACE, %CL				    # %CL <- ' ' to clear the missile
+    MOVL  X(%EBX), %ESI				    # %ESI <- X position of the missile
     SHRL  $SHIFT_16_BITS, %ESI			# shift right 16-bit to get X position of the missile
-    IMULL $COLUMN_OFFSET, %ESI, %EAX		# %EAX <- column offset of the memory address
-    MOVL  Y(%EBX), %ESI				# %ESI <- Y position of the missile
+    IMULL $COLUMN_OFFSET, %ESI, %EAX    # %EAX <- column offset of the memory address
+    MOVL  Y(%EBX), %ESI				    # %ESI <- Y position of the missile
     SHRL  $SHIFT_16_BITS, %ESI			# shift right 16-bit to get Y position of the missile
-    IMULL $ROW_OFFSET, %ESI			# %ESI <- row offset of the memory address
-    ADDL  %ESI, %EAX				# %EAX <- row & column offset of the memory address
-    PUSHL %EBX					# save content in %EBX
+    IMULL $ROW_OFFSET, %ESI			    # %ESI <- row offset of the memory address
+    ADDL  %ESI, %EAX				    # %EAX <- row & column offset of the memory address
+    PUSHL %EBX					        # save content in %EBX
     PUSHL %EDX
-    CALL  mp1_poke				# draw char
+    CALL  mp1_poke				        # draw char
     POPL  %EDX
-    POPL  %EBX					# retain content in %EBX
+    POPL  %EBX					        # retain content in %EBX
 
     CMPL $0, EXPLODED(%EBX)
     JNE  Draw_Exploded_Missile
@@ -212,7 +212,7 @@ update_missiles:
     #Check_Missile_Position:
     MOVL X(%EBX), %ESI				# %ESI <- X position of the missile
     ADDL VX(%EBX), %ESI				# %ESI <- X + dX
-    SHRL $SHIFT_16_BITS, %ESI			# %ESI <- X position of the missile Top 16-bit
+    SHRL $SHIFT_16_BITS, %ESI		# %ESI <- X position of the missile Top 16-bit
     CMPL $X_MIN_POS, %ESI			# check X position with X_min
     JL   Remove_Missile				# remove missile since out of range
     CMPL $X_MAX_POS, %ESI			# check X position with X_max
@@ -220,7 +220,7 @@ update_missiles:
 
     MOVL Y(%EBX), %ESI				# %ESI <- Y position of the missile
     ADDL VY(%EBX), %ESI				# %ESI <- Y + dY
-    SHRL $SHIFT_16_BITS, %ESI			# %ESI <- Y position of the missile Top 16-bit
+    SHRL $SHIFT_16_BITS, %ESI		# %ESI <- Y position of the missile Top 16-bit
     CMPL $Y_MIN_POS, %ESI			# check Y position with Y_min
     JL   Remove_Missile				# remove missile since out of range
     CMPL $Y_MAX_POS, %ESI			# check Y position with Y_max
@@ -244,28 +244,28 @@ update_missiles:
     JNE  Draw_Missile
 
     Draw_Exploded_Missile:
-      MOVB  $EXPLOSION, %CL			# %CL <- missile explosion symbol
-      MOVL  X(%EBX), %ESI			# %ESI <- X position of the missile
-      SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get X position of the missile
+      MOVB  $EXPLOSION, %CL			        # %CL <- missile explosion symbol
+      MOVL  X(%EBX), %ESI			        # %ESI <- X position of the missile
+      SHRL  $SHIFT_16_BITS, %ESI		    # shift right 16-bit to get X position of the missile
       IMULL $COLUMN_OFFSET, %ESI, %EAX		# %EAX <- column offset of the memory address
-      MOVL  Y(%EBX), %ESI			# %ESI <- Y position of the missile
-      SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get Y position of the missile
-      IMULL $ROW_OFFSET, %ESI			# %ESI <- row offset of the memory address
-      ADDL  %ESI, %EAX				# %EAX <- row & column offset of the memory address
-      PUSHL %EBX				# save content in %EBX
+      MOVL  Y(%EBX), %ESI			        # %ESI <- Y position of the missile
+      SHRL  $SHIFT_16_BITS, %ESI		    # shift right 16-bit to get Y position of the missile
+      IMULL $ROW_OFFSET, %ESI			    # %ESI <- row offset of the memory address
+      ADDL  %ESI, %EAX				        # %EAX <- row & column offset of the memory address
+      PUSHL %EBX				            # save content in %EBX
       PUSHL %EDX
-      CALL  mp1_poke				# draw char
+      CALL  mp1_poke				        # draw char
       POPL  %EDX
-      POPL  %EBX				# restore content in %EBX
+      POPL  %EBX				            # restore content in %EBX
 
       PUSHL %EBX				# save content in %EBX
-      CALL  missile_explode			# call missile_explode
+      CALL  missile_explode		# call missile_explode
       POPL  %EBX				# restore content in %EBX
 
       CMPL  $0, %EAX
       JE    Decrement_Exploded_Field
       PUSHL %EBX				# restore content in %EBX
-      CALL  mp1_notify_user			# call mp1_notify_user
+      CALL  mp1_notify_user		# call mp1_notify_user
       POPL  %EBX				# restore content in %EBX
       
     Decrement_Exploded_Field:
@@ -273,36 +273,36 @@ update_missiles:
       CMPL  $0, EXPLODED(%EBX)
       JE    Erase_Exploded_Missile
 
-    MOVB  $EXPLOSION, %CL			# %CL <- ' ' to clear the missile
-    MOVL  X(%EBX), %ESI				# %ESI <- X position of the missile
+    MOVB  $EXPLOSION, %CL			    # %CL <- ' ' to clear the missile
+    MOVL  X(%EBX), %ESI				    # %ESI <- X position of the missile
     SHRL  $SHIFT_16_BITS, %ESI			# shift right 16-bit to get X position of the missile
-    IMULL $COLUMN_OFFSET, %ESI, %EAX		# %EAX <- column offset of the memory address
-    MOVL  Y(%EBX), %ESI				# %ESI <- Y position of the missile
+    IMULL $COLUMN_OFFSET, %ESI, %EAX	# %EAX <- column offset of the memory address
+    MOVL  Y(%EBX), %ESI				    # %ESI <- Y position of the missile
     SHRL  $SHIFT_16_BITS, %ESI			# shift right 16-bit to get Y position of the missile
-    IMULL $ROW_OFFSET, %ESI			# %ESI <- row offset of the memory address
-    ADDL  %ESI, %EAX				# %EAX <- row & column offset of the memory address
-    PUSHL %EBX					# save content in %EBX
+    IMULL $ROW_OFFSET, %ESI			    # %ESI <- row offset of the memory address
+    ADDL  %ESI, %EAX				    # %EAX <- row & column offset of the memory address
+    PUSHL %EBX					        # save content in %EBX
     PUSHL %EDX
-    CALL  mp1_poke				# draw char
+    CALL  mp1_poke				        # draw char
     POPL  %EDX
-    POPL  %EBX					# retain content in %EBX
+    POPL  %EBX					        # retain content in %EBX
 
     JMP Next_Missile
       
     Erase_Exploded_Missile:
-      MOVB  $SPACE, %CL				# %CL <- ' ' to clear the missile
-      MOVL  X(%EBX), %ESI			# %ESI <- X position of the missile
+      MOVB  $SPACE, %CL				    # %CL <- ' ' to clear the missile
+      MOVL  X(%EBX), %ESI			    # %ESI <- X position of the missile
       SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get X position of the missile
-      IMULL $COLUMN_OFFSET, %ESI, %EAX		# %EAX <- column offset of the memory address
-      MOVL  Y(%EBX), %ESI			# %ESI <- Y position of the missile
+      IMULL $COLUMN_OFFSET, %ESI, %EAX  # %EAX <- column offset of the memory address
+      MOVL  Y(%EBX), %ESI			    # %ESI <- Y position of the missile
       SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get Y position of the missile
       IMULL $ROW_OFFSET, %ESI			# %ESI <- row offset of the memory address
-      ADDL  %ESI, %EAX				# %EAX <- row & column offset of the memory address
-      PUSHL %EBX				# save content in %EBX
+      ADDL  %ESI, %EAX				    # %EAX <- row & column offset of the memory address
+      PUSHL %EBX				        # save content in %EBX
       PUSHL %EDX
-      CALL  mp1_poke				# draw char
+      CALL  mp1_poke				    # draw char
       POPL  %EDX
-      POPL  %EBX				# retain content in %EBX
+      POPL  %EBX				        # retain content in %EBX
 
     Remove_Missile:
       CMPL mp1_missile_list, %EBX
@@ -311,45 +311,45 @@ update_missiles:
       MOVL mp1_missile_list, %ESI
 
       Find_Node_Remove:
-        CMPL NEXT(%ESI), %EBX			# compare %ESI next with %EBX node want to remove
+        CMPL NEXT(%ESI), %EBX	# compare %ESI next with %EBX node want to remove
         JE   Remove
         MOVL NEXT(%ESI), %ESI
         JMP  Find_Node_Remove
 
       Remove:
-        MOVL  NEXT(%EBX), %EDI			# %EDI <- %EBX next, node want to remove next
-        MOVL  %EDI, NEXT(%ESI)			# %ESI next <- node want to remove next
+        MOVL  NEXT(%EBX), %EDI	# %EDI <- %EBX next, node want to remove next
+        MOVL  %EDI, NEXT(%ESI)	# %ESI next <- node want to remove next
         PUSHL %EDI
         PUSHL %EBX
         CALL  mp1_free
         POPL  %EBX
         POPL  %EDI
-        MOVL  %EDI, %EBX			# %EBX <- %EDI, node want to remove next
+        MOVL  %EDI, %EBX	    # %EBX <- %EDI, node want to remove next
         JMP   Traverse_Missile_List
 
       Remove_Head:
         MOVL  NEXT(%EBX), %ESI			# %ESI <- %EBX next, head next
-        MOVL  %ESI, mp1_missile_list		# mp1_missile_list <- %ESI, old head next
+        MOVL  %ESI, mp1_missile_list	# mp1_missile_list <- %ESI, old head next
         PUSHL %EBX
-        CALL  mp1_free				# free head missile memory
+        CALL  mp1_free				    # free head missile memory
         POPL  %EBX
-        MOVL  mp1_missile_list, %EBX		# %EBX <- mp1_missile_list, new head
+        MOVL  mp1_missile_list, %EBX	# %EBX <- mp1_missile_list, new head
         JMP   Traverse_Missile_List
 
     Draw_Missile:
-      MOVB  C(%EBX), %CL			# %CL <- missile symbol
-      MOVL  X(%EBX), %ESI			# %ESI <- X position of the missile
+      MOVB  C(%EBX), %CL			    # %CL <- missile symbol
+      MOVL  X(%EBX), %ESI			    # %ESI <- X position of the missile
       SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get X position of the missile
-      IMULL $COLUMN_OFFSET, %ESI, %EAX		# %EAX <- column offset of the memory address
-      MOVL  Y(%EBX), %ESI			# %ESI <- Y position of the missile
+      IMULL $COLUMN_OFFSET, %ESI, %EAX	# %EAX <- column offset of the memory address
+      MOVL  Y(%EBX), %ESI			    # %ESI <- Y position of the missile
       SHRL  $SHIFT_16_BITS, %ESI		# shift right 16-bit to get Y position of the missile
       IMULL $ROW_OFFSET, %ESI			# %ESI <- row offset of the memory address
-      ADDL  %ESI, %EAX				# %EAX <- row & column offset of the memory address
-      PUSHL %EBX				# save content in %EBX
+      ADDL  %ESI, %EAX				    # %EAX <- row & column offset of the memory address
+      PUSHL %EBX				        # save content in %EBX
       PUSHL %EDX
-      CALL  mp1_poke				# draw char
+      CALL  mp1_poke				    # draw char
       POPL  %EDX
-      POPL  %EBX				# retain content in %EBX
+      POPL  %EBX				        # retain content in %EBX
       JMP   Next_Missile
 
     Next_Missile:
@@ -377,64 +377,64 @@ Draw_Base:
   PUSHL %ESI
   PUSHL %EDI
 
-  #Check_Base_1				# Check the 1st Base
+  #Check_Base_1				    # Check the 1st Base
     MOVL $FIRST_BASE, %ESI		# %ESI <- the X position of the 1st base
-    MOVL $0, %EDI			# clear %EDI to use as loop counter
+    MOVL $0, %EDI			    # clear %EDI to use as loop counter
 
     MOVL base_alive, %EBX		# %EBX <- base_alive array
-    CMPB $0, %BL			# check if the 1st base is alive
-    JE   Dead_Base			# the 1st base is dead base, jump to Dead_Base
+    CMPB $0, %BL			    # check if the 1st base is alive
+    JE   Dead_Base			    # the 1st base is dead base, jump to Dead_Base
 
     LEAL base_pic, %EBX			# %EBX <- the starting address of alive base picture
     JMP  Draw_Full_Base			# jump to Draw_Full_Base to draw the entire base
 
-  Check_Base_2:				# Check the 2nd Base
+  Check_Base_2:				    # Check the 2nd Base
     MOVL $SECOND_BASE, %ESI		# %ESI <- the X position of the 2nd base
-    MOVL $0, %EDI			# clear %EDI to use as loop counter
+    MOVL $0, %EDI			    # clear %EDI to use as loop counter
 
     MOVL base_alive, %EBX		# %EBX <- base_alive array
-    CMPB $0, %BH			# check if the 2nd base is alive
-    JE   Dead_Base			# the 2nd base is dead base, jump to Dead_Base
+    CMPB $0, %BH			    # check if the 2nd base is alive
+    JE   Dead_Base			    # the 2nd base is dead base, jump to Dead_Base
 
     LEAL base_pic, %EBX			# %EBX <- the starting address of alive base picture
     JMP  Draw_Full_Base			# jump to Draw_Full_Base to draw the entire base
 
-  Check_Base_3:				# Check the 3rd Base
+  Check_Base_3:				    # Check the 3rd Base
     MOVL $THIRD_BASE, %ESI		# %ESI <- the X position of the 3rd base
-    MOVL $0, %EDI			# clear %EDI to use as loop counter
+    MOVL $0, %EDI			    # clear %EDI to use as loop counter
 
     MOVL base_alive, %EBX		# %EBX <- base_alive array
-    SHRL $SHIFT_16_BITS, %EBX		# shift the higher 16-bit into %BX
-    CMPB $0, %BL			# check if the 3rd base is alive
-    JE   Dead_Base			# the 3rd base is dead base, jump to Dead_Base
+    SHRL $SHIFT_16_BITS, %EBX	# shift the higher 16-bit into %BX
+    CMPB $0, %BL			    # check if the 3rd base is alive
+    JE   Dead_Base			    # the 3rd base is dead base, jump to Dead_Base
 
     LEAL base_pic, %EBX 		# %EBX <- the starting address of alive base picture
     JMP  Draw_Full_Base			# jump to Draw_Full_Base to draw the entire base
   
   Dead_Base:				
-    LEAL dead_base_pic, %EBX		# %EBX <- the starting address of dead base picture
+    LEAL dead_base_pic, %EBX	# %EBX <- the starting address of dead base picture
 
   Draw_Full_Base:
-    MOVB (%EBX), %CL			# Load the char to display into %CL
+    MOVB (%EBX), %CL			        # Load the char to display into %CL
     IMULL $COLUMN_OFFSET, %ESI, %EAX	# %EAX <- the column offset of memory address
-    ADDL  $BASE_ROW_OFFSET, %EAX	# add row offset of memory address to %EAX
+    ADDL  $BASE_ROW_OFFSET, %EAX	    # add row offset of memory address to %EAX
 
     PUSHL %EDX
-    CALL  mp1_poke			# draw the char
+    CALL  mp1_poke			    # draw the char
     POPL  %EDX
 
-    INCL %EBX				# increment the address of base picture
-    INCL %ESI				# increment the X position of the base
-    INCL %EDI				# increment the loop counter
+    INCL %EBX				    # increment the address of base picture
+    INCL %ESI				    # increment the X position of the base
+    INCL %EDI				    # increment the loop counter
     
-    CMPL $4, %EDI			# check if the loop has already executed 5 times
+    CMPL $4, %EDI			    # check if the loop has already executed 5 times
     JLE  Draw_Full_Base			# if NO, execute loop again
 
   CMPL $BASE_1_FINISH, %ESI		# check which base to draw next
-  JE   Check_Base_2			# draw 2nd base next
+  JE   Check_Base_2			    # draw 2nd base next
 
   CMPL $BASE_2_FINISH, %ESI		# check which base to draw next
-  JE   Check_Base_3			# draw 3rd base next
+  JE   Check_Base_3			    # draw 3rd base next
 
   POPL %EDI
   POPL %ESI
@@ -456,14 +456,14 @@ Draw_Crosshairs:
   PUSHL %ESI
   PUSHL %EDI
 
-  MOVB  $CROSSHAIRS, %CL			# %CL <- '+' as crosshairs symbol
+  MOVB  $CROSSHAIRS, %CL			        # %CL <- '+' as crosshairs symbol
   
   IMULL $ROW_OFFSET, crosshairs_y, %EAX		# %EAX <- row offset of memory address
   IMULL $COLUMN_OFFSET, crosshairs_x, %EBX	# %EBX <- column offset of memory address
-  ADDL  %EBX, %EAX				# %EAX <- row & column offset of memory address
+  ADDL  %EBX, %EAX				            # %EAX <- row & column offset of memory address
 
   PUSHL %EDX
-  CALL  mp1_poke				# draw the char '+'
+  CALL  mp1_poke    # draw the char '+'
   POPL  %EDX
 
   POPL  %EDI
@@ -486,13 +486,13 @@ mp1_ioctl_movexhairs:
   PUSHL %ESI
   PUSHL %EDI
   
-  MOVB  $SPACE, %CL				# remove the crosshairs
+  MOVB  $SPACE, %CL				            # remove the crosshairs
   IMULL $ROW_OFFSET, crosshairs_y, %EAX		# %EAX <- the row offset of memory address
   IMULL $COLUMN_OFFSET, crosshairs_x, %EBX 	# %EBX <- the column offset of memory address
-  ADDL  %EBX, %EAX				# %EAX <- row & column offset of memory address
+  ADDL  %EBX, %EAX				            # %EAX <- row & column offset of memory address
   
   PUSHL %EDX
-  CALL  mp1_poke				# draw the char ' '
+  CALL  mp1_poke    # draw the char ' '
   POPL  %EDX
 
   # Update crosshairs position
@@ -501,37 +501,37 @@ mp1_ioctl_movexhairs:
 
   MOVL   8(%EBP), %EBX				# %EBX <- 32-bit xhair_delta_packed
   ANDL   $0x0000FFFF, %EBX			# remove [31:16] delta_y in %EBX
-  MOVSWL %BX, %EBX				# %EBX <- sign extend %BX delta_x
+  MOVSWL %BX, %EBX				    # %EBX <- sign extend %BX delta_x
   ADDL   %EBX, crosshairs_x			# M[crosshairs_x] <- M[crosshairs_x] + %BX
-						# new crosshairs_x = crosshairs_x + delta_x
+						            # new crosshairs_x = crosshairs_x + delta_x
 
   MOVL 8(%EBP), %EBX				# %EBX <- 32-bit xhair_delta_packed
   SARL $SHIFT_16_BITS, %EBX			# %EBX <- arithmetic shift right [31:16]xhair_delta_packed
   ADDL %EBX, crosshairs_y			# M[crosshairs_y] <- M[crosshairs_y] + %BX
-						# new crosshairs_y = crosshairs_x + delta_y
+						            # new crosshairs_y = crosshairs_x + delta_y
 
-  #Boundary_Check:				# Boundary_Check
-    CMPL $X_MIN_POS, crosshairs_x		# check if crosshairs_x is out of range on the left
-    JGE  Right_Boundary_Check 			# jump to Out_of_Range_Left
-    MOVL $X_MIN_POS, crosshairs_x		# assign min X position to crosshairs_x
+  #Boundary_Check:				    # Boundary_Check
+    CMPL $X_MIN_POS, crosshairs_x	# check if crosshairs_x is out of range on the left
+    JGE  Right_Boundary_Check 		# jump to Out_of_Range_Left
+    MOVL $X_MIN_POS, crosshairs_x	# assign min X position to crosshairs_x
 
   Right_Boundary_Check:
-    CMPL $X_MAX_POS, crosshairs_x		# check if crosshairs_x is out of range on the right
-    JLE  Top_Boundary_Check 			# jump to Out_of_Range_Right
-    MOVL $X_MAX_POS, crosshairs_x		# assign max X position to crosshairs_x
+    CMPL $X_MAX_POS, crosshairs_x	# check if crosshairs_x is out of range on the right
+    JLE  Top_Boundary_Check 		# jump to Out_of_Range_Right
+    MOVL $X_MAX_POS, crosshairs_x	# assign max X position to crosshairs_x
 
   Top_Boundary_Check:
-    CMPL $Y_MIN_POS, crosshairs_y		# check if crosshairs_x is out of range on the top
-    JGE  Bottom_Boundary_Check 			# jump to Out_of_Range_Top
-    MOVL $Y_MIN_POS, crosshairs_y		# assign min Y position to crosshairs_y
+    CMPL $Y_MIN_POS, crosshairs_y	# check if crosshairs_x is out of range on the top
+    JGE  Bottom_Boundary_Check 		# jump to Out_of_Range_Top
+    MOVL $Y_MIN_POS, crosshairs_y	# assign min Y position to crosshairs_y
 
   Bottom_Boundary_Check:
-    CMPL $Y_MAX_POS, crosshairs_y		# check if crosshairs_x is out of range on the bottom
-    JLE   Boundary_Check_Pass			# jump to Boundary_Check_Pass
-    MOVL $Y_MAX_POS, crosshairs_y		# assign max Y position to crosshairs_y
+    CMPL $Y_MAX_POS, crosshairs_y	# check if crosshairs_x is out of range on the bottom
+    JLE   Boundary_Check_Pass		# jump to Boundary_Check_Pass
+    MOVL $Y_MAX_POS, crosshairs_y	# assign max Y position to crosshairs_y
 
   Boundary_Check_Pass:
-    MOVL $0, %EAX				# return 0
+    MOVL $0, %EAX				    # return 0
     POPL %EDI
     POPL %ESI
     POPL %EBX
@@ -545,9 +545,9 @@ mp1_ioctl_movexhairs:
 # Registers: Standard C calling convention
 
 mp1_ioctl_startgame:
-  MOVL  $0, mp1_missile_list			# initialize mp1_missile_list to 0
-  MOVL  $0x00FFFFFF, base_alive			# initialize base_alive to 0
-  MOVL  $0, mp1_score				# initialize mp1_score to 0
+  MOVL  $0, mp1_missile_list			    # initialize mp1_missile_list to 0
+  MOVL  $0x00FFFFFF, base_alive			    # initialize base_alive to 0
+  MOVL  $0, mp1_score				        # initialize mp1_score to 0
   MOVL  $CROSSHAIRS_INIT_X, crosshairs_x	# initialize the starting X position of crosshairs
   MOVL  $CROSSHAIRS_INIT_Y, crosshairs_y	# initialize the starting Y position of crosshairs
   ret
@@ -567,30 +567,30 @@ mp1_ioctl_addmissile:
   PUSHL %EDI
 
   MOVL 8(%EBP), %EBX			# %EBX <- pointer to struct missile
-  CMPL $0, %EBX				# check if it's a null pointer
+  CMPL $0, %EBX				    # check if it's a null pointer
   JE   Null_Pointer_Copy_Fail
 
   PUSHL $MALLOC_MEMORY_BITS		# push arg to stack
-  CALL  mp1_malloc			# call function mp1_malloc
-  ADDL  $4, %ESP			# restore the stack pointer
-  MOVL  %EAX, %ESI			# %ESI <- pointer to allocate memory
-  CMPL  $0, %ESI			# check it it's a null pointer
+  CALL  mp1_malloc			    # call function mp1_malloc
+  ADDL  $4, %ESP			    # restore the stack pointer
+  MOVL  %EAX, %ESI			    # %ESI <- pointer to allocate memory
+  CMPL  $0, %ESI			    # check it it's a null pointer
   JE    Null_Pointer_Copy_Fail
 
   PUSHL $MALLOC_MEMORY_BITS		# push arg to stack
-  PUSHL %EBX				# *from %EBX <- pointer to struct missile
-  PUSHL %ESI				# *to   %ESI <- pointer to allocate memory
+  PUSHL %EBX				    # *from %EBX <- pointer to struct missile
+  PUSHL %ESI				    # *to   %ESI <- pointer to allocate memory
   CALL  mp1_copy_from_user		# call function mp1_copy_from_user
-  ADDL  $12, %ESP			# restore the stack pointer
-  CMPL  $0, %EAX			# check if copy successfully
+  ADDL  $12, %ESP			    # restore the stack pointer
+  CMPL  $0, %EAX			    # check if copy successfully
   JNE   Null_Pointer_Copy_Fail
 
-  MOVL  mp1_missile_list, %EDI		# %EDI <- head of missile_list
+  MOVL  mp1_missile_list, %EDI	# %EDI <- head of missile_list
   MOVL  %EDI, NEXT(%ESI)		# put head of missile_list to new allocate memory NEXT
-  MOVL  %ESI, mp1_missile_list		# new allocate memory <- head of missile_list
+  MOVL  %ESI, mp1_missile_list	# new allocate memory <- head of missile_list
 
   #Copy_From_User_Success:
-  MOVL  $0, %EAX			# copy from user success, return 0
+  MOVL  $0, %EAX			    # copy from user success, return 0
   POPL  %EDI
   POPL  %ESI
   POPL  %EBX
@@ -621,51 +621,51 @@ mp1_ioctl_getstatus:
   PUSHL %ESI
   PUSHL %EDI
 
-  MOVL 8(%EBP), %EBX			# %EBX <- user_status
+  MOVL 8(%EBP), %EBX		# %EBX <- user_status
   MOVL $0, %EDI				# %EDI <- 0, clear %EDI
 
   # Check_First_Base_Life
   MOVL $FIRST_BASE_ALIVE, %ESI		# %ESI <- 0x000000FF
-  ANDL base_alive, %ESI			# check if the 1st base is alive
+  ANDL base_alive, %ESI			    # check if the 1st base is alive
   CMPL $FIRST_BASE_ALIVE, %ESI		#
   JNE  Check_Second_Base_Life
-  ADDL $1, %EDI				# 1st base is alive, store a 1 at the 0th bit of %EDI
+  ADDL $1, %EDI				        # 1st base is alive, store a 1 at the 0th bit of %EDI
 
   Check_Second_Base_Life:
   MOVL $SECOND_BASE_ALIVE, %ESI		# %ESI <- 0x0000FF00
-  ANDL base_alive, %ESI			# check if the 2nd base is alive
+  ANDL base_alive, %ESI			    # check if the 2nd base is alive
   CMPL $SECOND_BASE_ALIVE, %ESI		#
   JNE  Check_Third_Base_Life
-  ADDL $2, %EDI				# 2nd base is alive, store a 1 at the 1st bit of %EDI
+  ADDL $2, %EDI				        # 2nd base is alive, store a 1 at the 1st bit of %EDI
   
   Check_Third_Base_Life:
   MOVL $THIRD_BASE_ALIVE, %ESI		# %ESI <- 0x00FF0000
-  ANDL base_alive, %ESI			# check if the 3rd base is alive
+  ANDL base_alive, %ESI			    # check if the 3rd base is alive
   CMPL $THIRD_BASE_ALIVE, %ESI		#
   JNE  Update_Score_Base_Status
-  ADDL $4, %EDI				# 3rd base is alive, store a 1 at the 2nd bit of %EDI
+  ADDL $4, %EDI				        # 3rd base is alive, store a 1 at the 2nd bit of %EDI
 
   Update_Score_Base_Status:
     SHLL   $SHIFT_16_BITS, %EDI		# shift %EDI left 16-bit to move the base status to 16th, 17th, 18th bit
-    MOVZWL mp1_score, %ESI		# %ESI <- current mp1_score
-    ADDL   %ESI, %EDI			# %EDI <- [18:16] base_status + [15:0] mp1_score
+    MOVZWL mp1_score, %ESI		    # %ESI <- current mp1_score
+    ADDL   %ESI, %EDI			    # %EDI <- [18:16] base_status + [15:0] mp1_score
 
-    PUSHL %EDI				# push %EDI on to stack with the above data
-    MOVL  %ESP, %ESI			# %ESI <- %ESP, %ESI points to the memory address of above data
-    PUSHL $4				# 4 bytes
-    PUSHL %ESI				# *from
-    PUSHL %EBX				# *to
+    PUSHL %EDI				        # push %EDI on to stack with the above data
+    MOVL  %ESP, %ESI			    # %ESI <- %ESP, %ESI points to the memory address of above data
+    PUSHL $4				        # 4 bytes
+    PUSHL %ESI				        # *from
+    PUSHL %EBX				        # *to
     CALL  mp1_copy_to_user
-    POPL  %EBX				# restore stack pointer
-    POPL  %ESI				#
-    ADDL  $4, %ESP			#
-    POPL  %EDI				#
+    POPL  %EBX				        # restore stack pointer
+    POPL  %ESI				        #
+    ADDL  $4, %ESP			        #
+    POPL  %EDI				        #
 
   CMPL $0, %EAX
   JNE   Copy_To_User_Fail
 
   #Copy_To_User_Success
-  MOVL $0, %EAX				# copy to user success, return 0
+  MOVL $0, %EAX				        # copy to user success, return 0
   POPL %EDI
   POPL %ESI
   POPL %EBX
@@ -673,7 +673,7 @@ mp1_ioctl_getstatus:
   ret  
 
   Copy_To_User_Fail:
-    MOVL $-1, %EAX			# copy to user fail, return -1
+    MOVL $-1, %EAX			        # copy to user fail, return -1
     POPL %EDI
     POPL %ESI
     POPL %EBX
@@ -699,12 +699,12 @@ mp1_ioctl_endgame:
   Free_LinkedList:
     CMP  $0, %EBX
     JE   Finish_Free_LinkedList		# check if head of mp1_missile_list is NULL PTR
-    MOVL NEXT(%EBX), %ESI		# %ESI <- next missile of mp1_missile_list
+    MOVL NEXT(%EBX), %ESI		    # %ESI <- next missile of mp1_missile_list
     PUSH %EBX
     CALL mp1_free
     POPL %EBX
-    MOVL %ESI, %EBX			# %EBX <- %ESI next missile of mp1_missile_list
-    JMP  Free_LinkedList		# jump back to Free_LinkedList
+    MOVL %ESI, %EBX			        # %EBX <- %ESI next missile of mp1_missile_list
+    JMP  Free_LinkedList		    # jump back to Free_LinkedList
 
   Finish_Free_LinkedList:
     POPL %EDI
